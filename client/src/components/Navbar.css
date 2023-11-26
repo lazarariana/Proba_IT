@@ -1,0 +1,8 @@
+.custom-btn.btn-link:not(:disabled):not(.disabled):active, 
+.custom-btn.btn-link:not(:disabled):not(.disabled).active,
+.custom-btn.btn-link:not(:disabled):not(.disabled):active:focus, 
+.custom-btn.btn-link:not(:disabled):not(.disabled).active:focus {
+  color: #06114F;
+  box-shadow: none;
+  outline: none;
+}
