@@ -9,6 +9,9 @@ import axios from "axios";
 import bcrypt from 'bcryptjs';
 import Cookies from 'js-cookie';
 import './Navbar.css';
+import { useContext } from 'react';
+import UserContext from './UserContext';
+
 
 const MyNavbar = ({ isLoggedIn }) => {
   const [showLogin, setShowLogin] = useState(false);
@@ -17,12 +20,18 @@ const MyNavbar = ({ isLoggedIn }) => {
   const [loginError, setLoginError] = useState('');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [sessionId, setSessionId] = useState('');
+
+
   const [confirmPassword, setConfirmPassword] = useState('');
   const [emailError, setEmailError] = useState('');
+
   const [passwordError, setPasswordError] = useState('');
   const [showCreatePoll, setShowCreatePoll] = useState(false);
+
   const [title, setTitle] = useState('');
   const [votingType, setVotingType] = useState('singleChoice');
   const [option1, setOption1] = useState('');
@@ -32,51 +41,48 @@ const MyNavbar = ({ isLoggedIn }) => {
   const handleCloseCreatePoll = () => setShowCreatePoll(false);
   const handleShowCreatePoll = () => setShowCreatePoll(true);
 
-  const createPoll = async (form) => {
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData);
-    const sessionId = localStorage.getItem('sessionId'); // Get sessionId from localStorage
-  
-    console.log(sessionId);
-    const response = await fetch('http://localhost:3001/createPoll', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Session-ID': sessionId,
-      },
-      body: JSON.stringify(data),
-    });
-  
-    if (response.ok) {
-      return true;
-    } else {
-      console.error('Failed to create poll');
-      console.error(response);
-      return false;
-    }
-  };
-
   const handleSubmitPoll = async (event) => {
+
     event.preventDefault();
-    const success = await createPoll(event.target);
-    if (success) {
-      const formData = {
-        title: title,
-        votingType: votingType,
-        options: [option1, option2, option3],
-      };
-    
-      console.log(formData);
-      handleCloseCreatePoll();
+
+    // asociez poll-ul cu user-ul care l-a creat
+    try {
+      const response = await axios.get('http://localhost:3001/getUsers', { params: { email } });
+
+      if (response.data.length > 0) {
+        console.log(email);
+
+        // Create poll directly here
+        axios.defaults.withCredentials = true;
+        const token = localStorage.getItem('token');
+        const createResponse = await axios.post('http://localhost:3001/createPoll', {
+          title: title,
+          votingType: votingType,
+          options: [option1, option2, option3],
+          email: email,
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (createResponse.data.error) {
+          console.error(createResponse.data.error);
+        } else {
+          console.log('Poll created successfully');
+          handleCloseCreatePoll();
+        }
+      }
+
+    } catch (error) {
+      console.error('Error checking if email is in use:', error);
+      return;
     }
   };
-
 
   const handleShowLogin = () => setShowLogin(true);
 
   const handleCloseLogin = () => {
     setShowLogin(false);
-    setEmail('');
+    //setEmail('');
     setPassword('');
   };
 
@@ -88,6 +94,8 @@ const MyNavbar = ({ isLoggedIn }) => {
   };
 
   const handleShowRegister = () => setShowRegister(true);
+
+
 
   const createUser = async () => {
     if (!email.includes('@gmail.com')) {
@@ -111,19 +119,24 @@ const MyNavbar = ({ isLoggedIn }) => {
 
     const hashedPassword = bcrypt.hashSync(password, 10);
 
-    axios.post('http://localhost:3001/createUser', {
-      email: email,
-      password: hashedPassword,
-    }).then((response) => {
+    try {
+      const response = await axios.post('http://localhost:3001/createUser', {
+        email: email,
+        password: hashedPassword,
+      });
+
       if (response.data.error) {
         setEmailError(response.data.error);
       } else {
         setEmailError('');
         setPasswordError('');
-      }
-    });
 
-    handleCloseRegister();
+        handleCloseRegister();
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+    }
+
     return (
       <div>{emailError && <p className="error">{emailError}</p>}</div>
     );
@@ -156,12 +169,13 @@ const MyNavbar = ({ isLoggedIn }) => {
   const loginUser = async () => {
     try {
       console.log(`Sending login request for email: ${email} with password: ${password}`);
+
       const response = await axios.post('http://localhost:3001/login', {
         email: email,
         password: password,
       }, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         }
       });
       if (response.data.error) {
@@ -169,6 +183,7 @@ const MyNavbar = ({ isLoggedIn }) => {
       } else {
         setLoginError('');
         setLoggedIn(true);
+        setEmail(email);
         handleCloseLogin();
         Cookies.set('token', response.data.token);
       }
@@ -185,49 +200,71 @@ const MyNavbar = ({ isLoggedIn }) => {
   return (
     <Navbar fixed="top" expand="sm" bg="white" variant="light" style={{ paddingTop: "1.5%" }}>
       <Navbar.Brand href="/">
-        <img src={logo} style={{ width: "80%" }} />
+        <Navbar.Brand href="/">
+          <img src={logo} style={{ width: "93.54px", height: "42.07px", position: "relative", left: "25px", }} />
+        </Navbar.Brand>
       </Navbar.Brand>
       <Navbar.Collapse className="justify-content-end">
-        <Nav>
-          {!loggedIn && (
-            <>
-              <Nav.Item>
-                <Button variant="link" id="custom-btn" onClick={handleShowLogin}>Logare</Button>
-              </Nav.Item>
-              <Nav.Item>
-                <Button variant="link" id="custom-btn" onClick={handleShowRegister}>Creare cont</Button>
-              </Nav.Item>
-            </>
-          )}
-        </Nav>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+          <Nav>
+            {!loggedIn && (
+              <>
+                <Nav.Item>
+                  <Button variant="link" id="custom-btn" onClick={handleShowLogin}
+                    style={{
+                      color: "#04395E", fontFamily: "Inter", fontSize: "22px",
+                      fontWeight: "500", lineHeight: "27px", letterSpacing: "0em",
+                      textAlign: "left", textDecoration: "none"
+                    }}>Login</Button>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button variant="link" id="custom-btn" onClick={handleShowRegister}
+                    style={{
+                      color: "#04395E", fontFamily: "Inter", fontSize: "22px", fontWeight: "500",
+                      lineHeight: "27px", letterSpacing: "0em", textAlign: "left", textDecoration: "none"
+                    }}>Register</Button>
+                </Nav.Item>
+              </>
+            )}
+            {loggedIn && (
+              <>
+                <Nav.Item>
+                  <Button
+                    variant="link"
+                    onClick={logoutUser}
+                    style={{
+                      color: "#04395E", fontFamily: "Inter", fontSize: "22px",
+                      fontWeight: "500", lineHeight: "27px", letterSpacing: "0em",
+                      textAlign: "left", textDecoration: "none"
+                    }}>Log out</Button>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button
+                    variant="outline-success"
+                    className="mr-sm-2 custom-button"
+                    onClick={handleShowCreatePoll}
+                    style={{
+                      color: "#04395E", fontFamily: "Inter", fontSize: "22px", fontWeight: "500",
+                      lineHeight: "27px", letterSpacing: "0em", textAlign: "left", textDecoration: "none",
+                      border: "none"
+                    }} >Create poll</Button>
+                </Nav.Item>
+              </>
+            )}
+          </Nav>
+        </div>
       </Navbar.Collapse>
-
-      <Navbar.Collapse className="justify-content-end">
-        <Nav>
-          {loggedIn && (
-            <>
-              <Nav.Item>
-                <Button variant="link" onClick={logoutUser} style={{ color: "#06114F" }}>Logout</Button>
-              </Nav.Item>
-              <Nav.Item>
-                <Button variant="outline-success" className="mr-sm-2" onClick={handleShowCreatePoll}>Create poll</Button>
-              </Nav.Item>
-            </>
-          )}
-        </Nav>
-      </Navbar.Collapse>
-
 
       {/* Login Modal */}
-      <Modal show={showLogin} onHide={handleCloseLogin}>
-        <Modal.Header closeButton>
+      <Modal show={showLogin} onHide={handleCloseLogin} centered>
+        <Modal.Header closeButton style={{ backgroundColor: '#04395E', color: 'white', border: 'none' }}>
           <Modal.Title>Login</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: '#04395E', color: 'white' }}>
           <Form>
             <Form.Group controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
-              <Form.Control type="email" placeholder="Enter email" value={email} onChange={e => setEmail(e.target.value)} />
+              <Form.Control type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">
@@ -236,68 +273,72 @@ const MyNavbar = ({ isLoggedIn }) => {
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseLogin}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={loginUser}>
+        <Modal.Footer style={{ backgroundColor: '#04395E', color: 'white' }} className="d-flex justify-content-center">
+          <Button variant="primary" onClick={loginUser} style={{ backgroundColor: 'white', color: '#04395E' }} >
             Login
           </Button>
         </Modal.Footer>
       </Modal>
 
       {/* Register Modal */}
-      <Modal show={showRegister} onHide={handleCloseRegister}>
-        <Modal.Header closeButton>
-          <Modal.Title>Welcome</Modal.Title>
+      <Modal show={showRegister} onHide={handleCloseRegister} centered>
+        <Modal.Header closeButton style={{ backgroundColor: '#04395E', color: 'white', border: 'none' }}>
+          <Modal.Title>Register</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: '#04395E', color: 'white' }}>
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
-              <Form.Control type="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Form.Control type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
               {emailError && <p>{emailError}</p>}
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Parola</Form.Label>
-              <Form.Control type="password" placeholder="parola" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ color: 'white', '::placeholder': { color: 'white !important' } }} />
               {passwordError && <p>{passwordError}</p>}
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Confirm Parola</Form.Label>
-              <Form.Control type="password" placeholder="confirm parola" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control type="password" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
             </Form.Group>
-
-            <Button variant="primary" type="button" className="mt-3" onClick={createUser}>Creare cont</Button>
           </Form>
         </Modal.Body>
+        <Modal.Footer style={{ backgroundColor: '#04395E', color: 'white' }} className="d-flex justify-content-center">
+          <Button variant="primary" type="button" className="mt-3" onClick={createUser} style={{ backgroundColor: 'white', color: '#04395E' }}>
+            Create account
+          </Button>
+        </Modal.Footer>
+
       </Modal>
 
-      <Modal show={showCreatePoll} onHide={handleCloseCreatePoll}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create Poll</Modal.Title>
+      {/* Create Poll Modal */}
+      <Modal show={showCreatePoll} onHide={handleCloseCreatePoll} centered>
+        <Modal.Header closeButton style={{ backgroundColor: '#04395E', color: 'white', border: 'none' }}>
+          <Modal.Title>Create a poll</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: '#04395E', color: 'white' }}>
           <Form onSubmit={handleSubmitPoll}>
-            <Form.Group controlId="title">
+            <Form.Group controlId="title" style={{ marginBottom: '10px' }}>
               <Form.Label>Title</Form.Label>
-              <Form.Control type="text" placeholder="Enter title" value={title} onChange={e => setTitle(e.target.value)} />
+              <Form.Control type="text" placeholder="Enter title" value={title} onChange={e => setTitle(e.target.value)} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', fontSize: '18px' }} />
             </Form.Group>
-            <Form.Label>Voting Type</Form.Label>
-            <Form.Check type="radio" label="Single Choice" name="votingType" id="singleChoice" checked={votingType === 'singleChoice'} onChange={() => setVotingType('singleChoice')} />
-            <Form.Check type="radio" label="Multiple Choice" name="votingType" id="multipleChoice" checked={votingType === 'multipleChoice'} onChange={() => setVotingType('multipleChoice')} />
-            <Form.Label>Answer Options</Form.Label>
-            <Form.Control type="text" placeholder="Option 1" value={option1} onChange={e => setOption1(e.target.value)} />
-            <Form.Control type="text" placeholder="Option 2" value={option2} onChange={e => setOption2(e.target.value)} />
-            <Form.Control type="text" placeholder="Option 3" value={option3} onChange={e => setOption3(e.target.value)} />
-            <Button variant="primary" type="submit">Submit</Button>
+            <Form.Label style={{ marginBottom: '10px', fontSize: '18px' }}>Voting Type</Form.Label>
+            <Form.Check type="radio" label="Single Choice" name="votingType" id="singleChoice" checked={votingType === 'singleChoice'} onChange={() => setVotingType('singleChoice')} style={{ marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Check type="radio" label="Multiple Choice" name="votingType" id="multipleChoice" checked={votingType === 'multipleChoice'} onChange={() => setVotingType('multipleChoice')} style={{ marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Label style={{ marginBottom: '10px', fontSize: '18px' }}>Answer Options</Form.Label>
+            <Form.Control type="text" placeholder="Option 1" value={option1} onChange={e => setOption1(e.target.value)} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Control type="text" placeholder="Option 2" value={option2} onChange={e => setOption2(e.target.value)} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Control type="text" placeholder="Option 3" value={option3} onChange={e => setOption3(e.target.value)} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
+            <div className="d-flex justify-content-center mt-3">
+              <Button variant="primary" type="submit" style={{ backgroundColor: 'white', color: '#04395E' }}>Create Poll</Button>
+            </div>
           </Form>
         </Modal.Body>
       </Modal>
 
-    </Navbar>
+    </Navbar >
   );
 };
 

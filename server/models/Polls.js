@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
-const PollSchema = new mongoose.Schema({   
-    tile: {
+const PollSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+    },   
+    title: {
         type: String,
         required: true,
     },
@@ -9,19 +13,16 @@ const PollSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    option1:{
-        type: String,
+    options:{
+        type: [String],
         required: true,
-    },
-    option2:{
-        type: String,
-        required: true,
-    },
-    option3:{
-        type: String,
-        required: true,
+        validate: [arrayLimit, '{PATH} exceeds the limit of 3']
     },
 });
+
+function arrayLimit(val) {
+  return val.length <= 3;
+}
 
 const PollModel = mongoose.model("poll", PollSchema);
 module.exports = PollModel;

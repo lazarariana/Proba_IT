@@ -1,0 +1,14 @@
+.modal-body .form-control {
+    background-color: #04395E;
+    backdrop-filter: blur(10px);
+  }
+
+  .login-modal .form-control {
+    background-color: transparent; 
+    color: #fff;
+    border: 1px solid #fff; 
+  }
+
+  .modal-backdrop.show {
+    background-color: rgba(217, 217, 217, 0.72);
+  }

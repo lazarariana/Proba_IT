@@ -5,18 +5,18 @@ import twitchIcon from './mdi_twitch.png';
 import facebookIcon from './uil_facebook.png';
 
 const Footer = () => (
-    <footer className="p-3 bg-danger text-white text-center position-fixed w-100" style={{ bottom: 0 }}>
+  <footer className="p-3 text-white text-center position-fixed w-100" style={{ bottom: 0, backgroundColor: '#FF1F66', height: '100px', paddingBottom: '20px' }}>
     <Container>
       <Row>
         <Col>
           <a target="blank" href="https://www.instagram.com/lsacbucuresti/">
-            <img src={instagramIcon} style={{ paddingRight: '20px',width: '50px', height: '50px' }} alt="" />
+            <img src={instagramIcon} style={{ paddingRight: '20px', width: '93px', height: '93px', padding: '7.75px 13.29px' }} alt="" />
           </a>
           <a target="blank" href="https://www.facebook.com/LsacBucuresti/">
-            <img src={facebookIcon} style={{ paddingRight: '20px',width: '50px', height: '50px' }} alt="" />
+            <img src={facebookIcon} style={{ paddingRight: '20px', width: '93px', height: '93px', padding: '7.75px 13.29px' }} alt="" />
           </a>
           <a target="blank" href="https://www.twitch.tv/lsac_bucuresti">
-            <img src={twitchIcon} style={{ paddingRight: '20px',width: '60px', height: '50px' }} alt="" />
+            <img src={twitchIcon} style={{ paddingRight: '20px', width: '93px', height: '93px', padding: '7.75px 13.29px' }} alt="" />
           </a>
         </Col>
       </Row>
