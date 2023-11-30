@@ -99,36 +99,6 @@ app.post('/createUser', async (req, res) => {
   res.json({ user: newUser });
 });
 
-// app.post("/login", async (req, res) => {
-
-//   try {
-//     const { email, password } = req.body;
-
-//     // Fetch the user from the database
-//     const user = await UserModel.findOne({ email });
-
-//     if (!user) {
-//       return res.status(400).json({ message: "User not found" });
-//     }
-
-//     const validPassword = bcrypt.compareSync(password, user.password);
-
-//     if (!validPassword) {
-//       return res.status(400).json({ message: "Invalid password" });
-//     }
-
-//     const token = jwt.sign({ id: user._id }, '6dcd4ce23d88e2ee95838f73b7740a205c2c34e6a5177a8e8ebea7a4eae4bf25a6dcd4ce23d88e2ee95838f73b7740a205c2c34e6a5177a8e8ebea7a4eae4bf25', { expiresIn: '1h' });
-  
-//     user.sessionId = token;
-//     await user.save();
-  
-//     res.json({ token, user });
-//   } catch (err) {
-//     console.error('Error in /login:', err);
-//     res.status(500).json({ message: err.message });
-//   }
-// });
-
 app.post("/login", passport.authenticate('local', { session: false }), async (req, res) => {
   try {
     const user = req.user;
@@ -145,7 +115,6 @@ app.post("/login", passport.authenticate('local', { session: false }), async (re
 });
 
 
-// Middleware to authenticate user from JWT
 const authenticateUser = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -163,16 +132,13 @@ const authenticateUser = (req, res, next) => {
   });
 };
 
-// Create a new poll
 app.post("/createPoll", authenticateUser, async (req, res) => {
   const { userId, title, votingType, options } = req.body;
 
-  // Ensure userId is provided
   if (!userId) {
     return res.status(400).json({ message: 'userId is required.' });
   }
 
-  // Transform options into an array of strings
   const transformedOptions = options.map(option => option.text);
 
   const newPoll = new PollModel({
@@ -210,7 +176,6 @@ const authenticatePoll = (req, res, next) => {
 app.delete("/deletePoll", authenticatePoll, async (req, res) => {
   const { userId, pollId } = req.body;
 
-  // Ensure userId and pollId are provided
   if (!userId || !pollId) {
     return res.status(400).json({ message: 'userId and pollId are required.' });
   }

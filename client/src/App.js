@@ -18,18 +18,20 @@ function App() {
   const [pollId, setPollId] = useState('');
   const [loginError, setLoginError] = useState(null);
   const [userId, setUserId] = useState(null);
-  
+
   return (
     <>
       <UserContext.Provider value={{ userId, setUserId }}>
-      <PollContext.Provider value={{ pollCreated, setPollCreated }}>
-        <DeletedPollContext.Provider value={{ pollId, setPollId }}>
-          <Navbar />
-          <Body />
-          <Footer />
-        </DeletedPollContext.Provider>
-      </PollContext.Provider>
-    </UserContext.Provider >
+        <PollContext.Provider value={{ pollCreated, setPollCreated }}>
+          <DeletedPollContext.Provider value={{ pollId, setPollId }}>
+            <Navbar />
+            <div style={{ flex: 1,   paddingBottom: '70px' }}>
+              <Body />
+            </div>
+            <Footer />
+          </DeletedPollContext.Provider>
+        </PollContext.Provider>
+      </UserContext.Provider >
     </>
   );
 };

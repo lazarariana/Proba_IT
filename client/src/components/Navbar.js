@@ -19,10 +19,9 @@ const MyNavbar = ({ isLoggedIn }) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  //const [userId, setUserId] = useState(null);
   const { userId, setUserId } = useContext(UserContext);
-  const {pollId, setPollId} =  useContext(DeletedPollContext);
- 
+  const { pollId, setPollId } = useContext(DeletedPollContext);
+
   const { pollCreated, setPollCreated } = useContext(PollContext);
 
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -43,25 +42,25 @@ const MyNavbar = ({ isLoggedIn }) => {
 
   const handleSubmitPoll = async (event) => {
     event.preventDefault();
-  
+
     try {
       const token = localStorage.getItem('token');
-  
+
       if (!token) {
         console.error('User is not logged in');
         return;
       }
-  
+
       axios.defaults.withCredentials = true;
       const createResponse = await axios.post('http://localhost:3001/createPoll', {
         userId: userId,
         title: title,
         votingType: votingType,
         options: [{ text: option1 }, { text: option2 }, { text: option3 }],
-    }, {
+      }, {
         headers: { Authorization: `Bearer ${token}` }
-    });
-  
+      });
+
       if (createResponse.data.message) {
         console.error(createResponse.data.message);
       } else {
@@ -80,6 +79,8 @@ const MyNavbar = ({ isLoggedIn }) => {
 
   const handleCloseLogin = () => {
     setShowLogin(false);
+    setEmail('');
+    setPassword('');
   };
 
   const handleCloseRegister = () => {
@@ -123,7 +124,6 @@ const MyNavbar = ({ isLoggedIn }) => {
       return;
     }
 
-    // Check if an account with the provided email already exists
     try {
       const response = await axios.get('http://localhost:3001/getUsers', { params: { email } });
 
@@ -149,7 +149,6 @@ const MyNavbar = ({ isLoggedIn }) => {
         setEmailError('');
         setPasswordError('');
         handleCloseRegister();
-        // Set the token after creating the user
         Cookies.set('token', response.data.user.token);
         setUserId(response.data._id);
       }
@@ -165,26 +164,24 @@ const MyNavbar = ({ isLoggedIn }) => {
   const loginUser = async () => {
     try {
       console.log(`Sending login request for email: ${email} with password: ${password}`);
-  
+
       const response = await axios.post('http://localhost:3001/login', {
         email: email,
-        password: password, // send the plaintext password
+        password: password,
       }, {
         headers: {
           'Content-Type': 'application/json',
         }
       });
-  
+
       if (response.data.message) {
         setLoginError(response.data.message);
       } else {
         setLoginError('');
         setLoggedIn(true);
         setEmail(email);
-        // Set the userId state variable
         setUserId(response.data.user._id);
         console.log(`User logged in with ID: ${response.data.user._id}`);
-        // Store the token in the local storage
         localStorage.setItem('token', response.data.token);
         handleCloseLogin();
       }
@@ -258,12 +255,14 @@ const MyNavbar = ({ isLoggedIn }) => {
           <Form>
             <Form.Group controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
-              <Form.Control type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+              <Form.Control type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}
+                onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} />
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+              <Form.Control type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}
+                onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} />
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -289,17 +288,18 @@ const MyNavbar = ({ isLoggedIn }) => {
 
             <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ color: 'white', '::placeholder': { color: 'white !important' } }} />
+              <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
               {passwordError && <p>{passwordError}</p>}
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Confirm Password</Form.Label>
-              <Form.Control type="password" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+              <Form.Control type="password" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} />
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer style={{ backgroundColor: '#04395E', color: 'white' }} className="d-flex justify-content-center">
+        <Modal.Footer style={{ backgroundColor: '#04395E', color: 'white' }} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} className="d-flex justify-content-center">
           <Button variant="primary" type="button" className="mt-3" onClick={createUser} style={{ backgroundColor: 'white', color: '#04395E' }}>
             Create account
           </Button>
@@ -316,15 +316,15 @@ const MyNavbar = ({ isLoggedIn }) => {
           <Form onSubmit={handleSubmitPoll}>
             <Form.Group controlId="title" style={{ marginBottom: '10px' }}>
               <Form.Label>Title</Form.Label>
-              <Form.Control type="text" placeholder="Enter title" value={title} onChange={e => setTitle(e.target.value)} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', fontSize: '18px' }} />
+              <Form.Control type="text" placeholder="Enter title" value={title} onChange={e => setTitle(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', fontSize: '18px' }} />
             </Form.Group>
             <Form.Label style={{ marginBottom: '10px', fontSize: '18px' }}>Voting Type</Form.Label>
             <Form.Check type="radio" label="Single Choice" name="votingType" id="singleChoice" checked={votingType === 'singleChoice'} onChange={() => setVotingType('singleChoice')} style={{ marginBottom: '10px', fontSize: '18px' }} />
             <Form.Check type="radio" label="Multiple Choice" name="votingType" id="multipleChoice" checked={votingType === 'multipleChoice'} onChange={() => setVotingType('multipleChoice')} style={{ marginBottom: '10px', fontSize: '18px' }} />
             <Form.Label style={{ marginBottom: '10px', fontSize: '18px' }}>Answer Options</Form.Label>
-            <Form.Control type="text" placeholder="Option 1" value={option1} onChange={e => setOption1(e.target.value)} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
-            <Form.Control type="text" placeholder="Option 2" value={option2} onChange={e => setOption2(e.target.value)} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
-            <Form.Control type="text" placeholder="Option 3" value={option3} onChange={e => setOption3(e.target.value)} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Control type="text" placeholder="Option 1" value={option1} onChange={e => setOption1(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Control type="text" placeholder="Option 2" value={option2} onChange={e => setOption2(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Control type="text" placeholder="Option 3" value={option3} onChange={e => setOption3(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
             <div className="d-flex justify-content-center mt-3">
               <Button variant="primary" type="submit" style={{ backgroundColor: 'white', color: '#04395E' }}>Create Poll</Button>
             </div>
