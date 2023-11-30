@@ -1,29 +1,88 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Form, Row, Col, Modal } from 'react-bootstrap';
 import tortoise from './testoasa.png';
 import backgroundImage from './bg.png';
+import PollContext from '../pollContext.js';
+import DeletedPollContext from '../DeletedPollContext.js';
+import axios from "axios";
+import UserContext from '../UserContext';
 
 const Body = () => {
   const [polls, setPolls] = useState([]);
+  const { userId, setUserId } = useContext(UserContext);
 
+  // Apply the background image to the body of the document
   useEffect(() => {
-    fetch('http://localhost:3001/getPolls')
-      .then(response => response.json())
-      .then(data => setPolls(data))
-      .catch(error => console.error('Error:', error));
-
-    // Apply the background image to the body of the document
     document.body.style.backgroundImage = `url(${backgroundImage})`;
     document.body.style.backgroundPosition = 'center';
     document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundRepeat = 'no-repeat';
     document.body.style.height = '100vh';
     document.body.style.width = '100vw';
     document.body.style.margin = 0;
     document.body.style.padding = 0;
   }, []);
 
+  const { pollCreated, setPollCreated } = useContext(PollContext);
+  const { pollId, setPollId } = useContext(DeletedPollContext);
+
+  // Fetch the polls when the component mounts
+  useEffect(() => {
+    fetch('http://localhost:3001/getPolls')
+      .then(response => response.json())
+      .then(data => setPolls(data))
+      .catch(error => console.error('Error:', error));
+  }, []);
+
+  // Fetch the polls again whenever a new poll is created
+  useEffect(() => {
+    if (pollCreated) {
+      fetch('http://localhost:3001/getPolls')
+        .then(response => response.json())
+        .then(data => {
+          setPolls(data);
+          setPollCreated(false);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  }, [pollCreated]);
+
+
+  const deletePoll = async (pollId) => {
+    try {
+      const token = localStorage.getItem('token');
+  
+      if (!token) {
+        console.error('User is not logged in');
+        return;
+      }
+  
+      axios.defaults.withCredentials = true;
+      const deleteResponse = await axios.delete('http://localhost:3001/deletePoll', {
+        data: { pollId, userId },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
+      if (deleteResponse.data.message) {
+        console.error(deleteResponse.data.message);
+      } else {
+        console.log('Poll deleted successfully');
+        fetch('http://localhost:3001/getPolls')
+        .then(response => response.json())
+        .then(data => {
+          setPolls(data);
+          setPollCreated(false);
+        })
+        .catch(error => console.error('Error:', error));
+        // Fetch the polls again or update your state here
+      }
+    } catch (error) {
+      console.error('Error deleting poll:', error);
+      return;
+    }
+  };
+
   return (
+
     <div style={{
       backgroundImage: `url(${backgroundImage})`,
       backgroundSize: 'cover',
@@ -157,6 +216,12 @@ const Body = () => {
                   ))}
                 </Modal.Body>
               </Modal.Dialog>
+              <button style={{
+                position: 'absolute', bottom: '10px', left: '10px',
+                backgroundColor: '#04395E', color: 'white',
+              }}
+                onClick={() => deletePoll(poll._id)}>Delete
+              </button>
             </div>
           );
         })}

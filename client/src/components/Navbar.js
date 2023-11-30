@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
@@ -6,27 +6,27 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import logo from './logo.png';
 import axios from "axios";
-import bcrypt from 'bcryptjs';
 import Cookies from 'js-cookie';
 import './Navbar.css';
-import { useContext } from 'react';
-import UserContext from './UserContext';
+import PollContext from '../pollContext.js';
+import DeletedPollContext from '../DeletedPollContext.js';
+import UserContext from '../UserContext';
 
 
 const MyNavbar = ({ isLoggedIn }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [loginError, setLoginError] = useState('');
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [sessionId, setSessionId] = useState('');
-
+  //const [userId, setUserId] = useState(null);
+  const { userId, setUserId } = useContext(UserContext);
+  const {pollId, setPollId} =  useContext(DeletedPollContext);
+ 
+  const { pollCreated, setPollCreated } = useContext(PollContext);
 
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [emailError, setEmailError] = useState('');
 
   const [passwordError, setPasswordError] = useState('');
@@ -42,38 +42,36 @@ const MyNavbar = ({ isLoggedIn }) => {
   const handleShowCreatePoll = () => setShowCreatePoll(true);
 
   const handleSubmitPoll = async (event) => {
-
     event.preventDefault();
-
-    // asociez poll-ul cu user-ul care l-a creat
+  
     try {
-      const response = await axios.get('http://localhost:3001/getUsers', { params: { email } });
-
-      if (response.data.length > 0) {
-        console.log(email);
-
-        // Create poll directly here
-        axios.defaults.withCredentials = true;
-        const token = localStorage.getItem('token');
-        const createResponse = await axios.post('http://localhost:3001/createPoll', {
-          title: title,
-          votingType: votingType,
-          options: [option1, option2, option3],
-          email: email,
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (createResponse.data.error) {
-          console.error(createResponse.data.error);
-        } else {
-          console.log('Poll created successfully');
-          handleCloseCreatePoll();
-        }
+      const token = localStorage.getItem('token');
+  
+      if (!token) {
+        console.error('User is not logged in');
+        return;
       }
-
+  
+      axios.defaults.withCredentials = true;
+      const createResponse = await axios.post('http://localhost:3001/createPoll', {
+        userId: userId,
+        title: title,
+        votingType: votingType,
+        options: [{ text: option1 }, { text: option2 }, { text: option3 }],
+    }, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+  
+      if (createResponse.data.message) {
+        console.error(createResponse.data.message);
+      } else {
+        setPollCreated(true);
+        console.log('Poll created successfully');
+        setPollId(createResponse.data._id);
+        handleCloseCreatePoll();
+      }
     } catch (error) {
-      console.error('Error checking if email is in use:', error);
+      console.error('Error checking if user exists:', error);
       return;
     }
   };
@@ -82,8 +80,6 @@ const MyNavbar = ({ isLoggedIn }) => {
 
   const handleCloseLogin = () => {
     setShowLogin(false);
-    //setEmail('');
-    setPassword('');
   };
 
   const handleCloseRegister = () => {
@@ -94,53 +90,6 @@ const MyNavbar = ({ isLoggedIn }) => {
   };
 
   const handleShowRegister = () => setShowRegister(true);
-
-
-
-  const createUser = async () => {
-    if (!email.includes('@gmail.com')) {
-      setEmailError('Email must include "@gamil.com"');
-      return;
-    }
-
-    // Check if an account with the provided email already exists
-    try {
-      const response = await axios.get('http://localhost:3001/getUsers', { params: { email } });
-
-      if (response.data.length > 0) {
-        setEmailError('That email is already in use!');
-        handleCloseRegister();
-        return;
-      }
-    } catch (error) {
-      console.error('Error checking if email is in use:', error);
-      return;
-    }
-
-    const hashedPassword = bcrypt.hashSync(password, 10);
-
-    try {
-      const response = await axios.post('http://localhost:3001/createUser', {
-        email: email,
-        password: hashedPassword,
-      });
-
-      if (response.data.error) {
-        setEmailError(response.data.error);
-      } else {
-        setEmailError('');
-        setPasswordError('');
-
-        handleCloseRegister();
-      }
-    } catch (error) {
-      console.error('Error creating user:', error);
-    }
-
-    return (
-      <div>{emailError && <p className="error">{emailError}</p>}</div>
-    );
-  };
 
   const validateForm = () => {
     let isValid = true;
@@ -158,51 +107,96 @@ const MyNavbar = ({ isLoggedIn }) => {
     return isValid;
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const logoutUser = () => {
+    setLoggedIn(false);
+    Cookies.remove('token');
+  };
 
-    if (validateForm()) {
-      createUser();
+  const createUser = async () => {
+    if (!validateForm()) {
+      return;
     }
+
+
+    if (!email.includes('@gmail.com')) {
+      setEmailError('Email must include "@gmail.com"');
+      return;
+    }
+
+    // Check if an account with the provided email already exists
+    try {
+      const response = await axios.get('http://localhost:3001/getUsers', { params: { email } });
+
+      if (response.data.length > 0) {
+        setEmailError('That email is already in use!');
+        handleCloseRegister();
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking if email is in use:', error);
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3001/createUser', {
+        email: email,
+        password: password,
+      });
+
+      if (response.data.error) {
+        setEmailError(response.data.error);
+      } else {
+        setEmailError('');
+        setPasswordError('');
+        handleCloseRegister();
+        // Set the token after creating the user
+        Cookies.set('token', response.data.user.token);
+        setUserId(response.data._id);
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+    }
+
+    return (
+      <div>{emailError && <p className="error">{emailError}</p>}</div>
+    );
   };
 
   const loginUser = async () => {
     try {
       console.log(`Sending login request for email: ${email} with password: ${password}`);
-
+  
       const response = await axios.post('http://localhost:3001/login', {
         email: email,
-        password: password,
+        password: password, // send the plaintext password
       }, {
         headers: {
           'Content-Type': 'application/json',
         }
       });
-      if (response.data.error) {
-        setLoginError(response.data.error);
+  
+      if (response.data.message) {
+        setLoginError(response.data.message);
       } else {
         setLoginError('');
         setLoggedIn(true);
         setEmail(email);
+        // Set the userId state variable
+        setUserId(response.data.user._id);
+        console.log(`User logged in with ID: ${response.data.user._id}`);
+        // Store the token in the local storage
+        localStorage.setItem('token', response.data.token);
         handleCloseLogin();
-        Cookies.set('token', response.data.token);
       }
     } catch (error) {
       console.error('Error logging in:', error);
     }
   };
 
-  const logoutUser = () => {
-    setLoggedIn(false);
-    Cookies.remove('token');
-  };
-
   return (
     <Navbar fixed="top" expand="sm" bg="white" variant="light" style={{ paddingTop: "1.5%" }}>
       <Navbar.Brand href="/">
-        <Navbar.Brand href="/">
-          <img src={logo} style={{ width: "93.54px", height: "42.07px", position: "relative", left: "25px", }} />
-        </Navbar.Brand>
+        <img src={logo} style={{ width: "93.54px", height: "42.07px", position: "relative", left: "25px", }} />
       </Navbar.Brand>
       <Navbar.Collapse className="justify-content-end">
         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
