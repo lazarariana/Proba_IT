@@ -8,7 +8,7 @@
 - ### JWT AUTH
   [Link](https://cambass.medium.com/jwt-authentication-with-node-express-passport-and-mongodb-445a7fca5893)
 
-- ### React hooks: (am folosit doar useState si useContext in implementare)
+- ### React hooks: (I used just useState and useContext in my implementation)
   [Link](https://www.youtube.com/watch?v=LlvBzyy-558&t=1s)
 
 ## Setup
