@@ -48,35 +48,44 @@ const Body = () => {
   const deletePoll = async (pollId) => {
     try {
       const token = localStorage.getItem('token');
-
+  
       if (!token) {
         console.error('User is not logged in');
         return;
       }
-
+  
       axios.defaults.withCredentials = true;
       const deleteResponse = await axios.delete('http://localhost:3001/deletePoll', {
         data: { pollId, userId },
         headers: { Authorization: `Bearer ${token}` }
       });
-
+  
       if (deleteResponse.data.message) {
         console.error(deleteResponse.data.message);
       } else {
         console.log('Poll deleted successfully');
-        fetch('http://localhost:3001/getPolls')
-          .then(response => response.json())
-          .then(data => {
-            setPolls(data);
-            setPollCreated(false);
-          })
-          .catch(error => console.error('Error:', error));
+        setPolls((prevPolls) => prevPolls.filter((poll) => poll._id !== pollId));
+  
+        // Fetch new polls
+        const response = await fetch('http://localhost:3001/getPolls');
+        const data = await response.json();
+        setPolls(data);
       }
     } catch (error) {
       console.error('Error deleting poll:', error);
       return;
     }
   };
+
+  useEffect(() => {
+    fetch('http://localhost:3001/getPolls')
+        .then(response => response.json())
+        .then(data => {
+          setPolls(data);
+          setPollCreated(false);
+        })
+        .catch(error => console.error('Error:', error));
+  }, [polls]);
 
   return (
     <Container fluid>
