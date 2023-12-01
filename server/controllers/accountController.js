@@ -9,6 +9,7 @@ exports.login = function (req, res) {
     } else {
       var payload = { 
         id: user.id, 
+        // value should be replaced after testing
         expire: Date.now() + 1000 * 60 * 60 * 24 * 7 
       }
 

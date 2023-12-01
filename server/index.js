@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 app.use(session({
-  secret: '6dcd4ce23d88e2ee95838f73b7740a205c2c34e6a5177a8e8ebea7a4eae4bf25a6dcd4ce23d88e2ee95838f73b7740a205c2c34e6a5177a8e8ebea7a4eae4bf25',
+  secret: process.env.JWT_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false }
@@ -102,7 +102,7 @@ app.post('/createUser', async (req, res) => {
 app.post("/login", passport.authenticate('local', { session: false }), async (req, res) => {
   try {
     const user = req.user;
-    const token = jwt.sign({ id: user._id }, '6dcd4ce23d88e2ee95838f73b7740a205c2c34e6a5177a8e8ebea7a4eae4bf25a6dcd4ce23d88e2ee95838f73b7740a205c2c34e6a5177a8e8ebea7a4eae4bf25', { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
   
     user.sessionId = token;
     await user.save();

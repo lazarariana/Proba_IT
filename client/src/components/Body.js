@@ -66,7 +66,6 @@ const Body = () => {
         console.log('Poll deleted successfully');
         setPolls((prevPolls) => prevPolls.filter((poll) => poll._id !== pollId));
   
-        // Fetch new polls
         const response = await fetch('http://localhost:3001/getPolls');
         const data = await response.json();
         setPolls(data);
@@ -134,10 +133,10 @@ const Body = () => {
           </div>
           <Col md={8}>
             <img src={tortoise} alt="description" style={{
-              width: "450px",
-              height: "350px",
+              width: "550px",
+              height: "450px",
               marginTop: '50px',
-              marginLeft: '300px'
+              marginLeft: '200px'
             }} />
           </Col>
         </div>
@@ -180,7 +179,8 @@ const Body = () => {
                       width: '539px',
                       height: '62px',
                       marginTop: '20px',
-                      marginLeft: '20px'
+                      marginLeft: '20px',
+                      marginBottom: '40px'
                     }}>
                       {poll.title}
                     </Modal.Title>
@@ -196,7 +196,8 @@ const Body = () => {
                       textAlign: 'left',
                       width: '158px',
                       height: '26px',
-                      marginLeft: '20px'
+                      marginLeft: '20px',
+                      marginBottom: '20px'
                     }}>
                       Make a choice:
                     </p>
@@ -213,6 +214,7 @@ const Body = () => {
                       position: 'absolute',
                       top: '724px',
                       left: '799px',
+                      marginLeft: '20px',
                     }}>
                     </p>
                     {poll.options.map((option, index) => (
@@ -230,9 +232,10 @@ const Body = () => {
                           lineHeight: '33px',
                           letterSpacing: '0em',
                           textAlign: 'left',
-                          width: '117px',
+                          width: '200px',
                           height: '29px',
-                          marginLeft: '20px'
+                          marginLeft: '20px',
+                          marginBottom: '20px'
                         }}
                       />
                     ))}
@@ -253,6 +256,7 @@ const Body = () => {
                   lineHeight: '27px',
                   letterSpacing: '0em',
                   textAlign: 'left',
+                  marginBottom: '20px'
                 }}
                   onClick={() => deletePoll(poll._id)}>Delete
                 </button>

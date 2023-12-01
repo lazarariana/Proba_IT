@@ -309,22 +309,22 @@ const MyNavbar = ({ isLoggedIn }) => {
 
       {/* Create Poll Modal */}
       <Modal show={showCreatePoll} onHide={handleCloseCreatePoll} centered>
-        <Modal.Header closeButton style={{ backgroundColor: '#04395E', color: 'white', border: 'none' }}>
+        <Modal.Header closeButton style={{ backgroundColor: '#04395E', border: 'none', color: 'white' }}>
           <Modal.Title>Create a poll</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ backgroundColor: '#04395E', color: 'white' }}>
           <Form onSubmit={handleSubmitPoll}>
             <Form.Group controlId="title" style={{ marginBottom: '10px' }}>
               <Form.Label>Title</Form.Label>
-              <Form.Control type="text" placeholder="Enter title" value={title} onChange={e => setTitle(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', fontSize: '18px' }} />
+              <Form.Control type="text" placeholder="Enter title" value={title} onChange={e => setTitle(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', fontSize: '18px' }} />
             </Form.Group>
             <Form.Label style={{ marginBottom: '10px', fontSize: '18px' }}>Voting Type</Form.Label>
             <Form.Check type="radio" label="Single Choice" name="votingType" id="singleChoice" checked={votingType === 'singleChoice'} onChange={() => setVotingType('singleChoice')} style={{ marginBottom: '10px', fontSize: '18px' }} />
             <Form.Check type="radio" label="Multiple Choice" name="votingType" id="multipleChoice" checked={votingType === 'multipleChoice'} onChange={() => setVotingType('multipleChoice')} style={{ marginBottom: '10px', fontSize: '18px' }} />
             <Form.Label style={{ marginBottom: '10px', fontSize: '18px' }}>Answer Options</Form.Label>
-            <Form.Control type="text" placeholder="Option 1" value={option1} onChange={e => setOption1(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
-            <Form.Control type="text" placeholder="Option 2" value={option2} onChange={e => setOption2(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
-            <Form.Control type="text" placeholder="Option 3" value={option3} onChange={e => setOption3(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', color: 'white', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Control type="text" placeholder="Option 1" value={option1} onChange={e => setOption1(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Control type="text" placeholder="Option 2" value={option2} onChange={e => setOption2(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
+            <Form.Control type="text" placeholder="Option 3" value={option3} onChange={e => setOption3(e.target.value)} onFocus={(e) => e.target.style.backgroundColor = "#f0f0f0"} style={{ backgroundColor: 'rgba(217, 217, 217, 0.72)', borderTop: '3px solid #FF1F66', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginBottom: '10px', fontSize: '18px' }} />
             <div className="d-flex justify-content-center mt-3">
               <Button variant="primary" type="submit" style={{ backgroundColor: 'white', color: '#04395E' }}>Create Poll</Button>
             </div>
