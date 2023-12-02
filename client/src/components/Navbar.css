@@ -1,22 +1,74 @@
-.custom-btn.btn-link:not(:disabled):not(.disabled):active, 
-.custom-btn.btn-link:not(:disabled):not(.disabled).active,
-.custom-btn.btn-link:not(:disabled):not(.disabled):active:focus, 
-.custom-btn.btn-link:not(:disabled):not(.disabled).active:focus {
-  color: #06114F;
-  box-shadow: none;
-  outline: none;
+.navbar {
+  width: 100%;
+  max-width: 100vw;
+  position: sticky;
+  top: 0;
+  justify-content: space-between;
 }
 
-.poll-container .modal-body {
+.navbar-brand,
+.navbar-nav {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.poll-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  padding: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.poll-container .form-group,
-.poll-container .form-check,
-.poll-container .form-control {
-  margin: 10px 0;
+.my-modal .modal-dialog {
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .my-modal .modal-dialog {
+    top: 40vh;
+    left: 15vw;
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  .my-modal .modal-dialog {
+    top: 25vh;
+    left: 40vw;
+    width: 25vw;
+    height: 40vh;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .navbar {
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .navbar-brand {
+    padding-left: 0;
+  }
+
+  .navbar-collapse {
+    order: 2;
+  }
+
+  .navbar-brand,
+  .navbar-nav {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .mr-2 {
+    margin-right: 0 !important;
+  }
+
+  .poll {
+    flex: 0 0 100%;
+  }
 }

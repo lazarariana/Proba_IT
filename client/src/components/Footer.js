@@ -3,9 +3,10 @@ import { Container, Row, Col } from 'react-bootstrap';
 import instagramIcon from './mdi_instagram.png';
 import twitchIcon from './mdi_twitch.png';
 import facebookIcon from './uil_facebook.png';
+import './Footer.css';
 
 const Footer = () => (
-  <footer className="p-1 text-white text-center position-fixed w-100" style={{ bottom: 0, backgroundColor: '#FF1F66', height: '50px', paddingBottom: '20px' }}>
+  <footer className="p-1 text-white text-center position-fixed" style={{ bottom: 0, backgroundColor: '#FF1F66', height: '50px', paddingBottom: '20px', width: '100%', maxWidth: '100vw' }}>
     <Container>
       <Row>
         <Col>

@@ -27,13 +27,18 @@ There are 5 components in Navbar: logo and 4 buttons, which are displayed depend
   Generated a token and saved in cookies credentials for logging in.
 
 - **Create poll**
-  Each poll must have a title, 3 options and a type of answer.
+  Each poll must have a title, 3 options and a type of answer. Delete buttons is displayed only if a user is logged.
 
 ### **Body**
 Relation between a poll and a user is that the user whose ID is associated to the poll is the owner of it and is allowed to delete it from the page. Every time a poll is created/deleted, the page is updated to the modified database by fetching the route which returns all polls. If the user who is currently logged in tries to delete a poll without being the owner of it, an error message will be returned. 
 
 ### **Footer**
 Icons hide links to social media pages.
+
+### **Responsiveness**
+Used media queries, React modules, Bootstrap React classes and CSS for a responsive design.
+The previous design is now adapted to the reduced dimensions of a mobile phone too.
+
 
 ## Server side
 Created a model for user and one for poll. Used CORS in order to add/delete/retrieve data from database in requests. Define routes to return all users/polls currently stored in database, create a user/poll, login a user, delete a poll by ID, get a user by ID. Used mongoose to interact with the database and Thunder Client VSCode extension for debugging the response of requests / the functionality of the operations implemented.

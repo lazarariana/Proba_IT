@@ -11,18 +11,22 @@ import './Navbar.css';
 import PollContext from '../pollContext.js';
 import DeletedPollContext from '../DeletedPollContext.js';
 import UserContext from '../UserContext';
+import LogContext from '../LogContext';
 
 
 const MyNavbar = ({ isLoggedIn }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
+  //const [loggedIn, setLoggedIn] = useState(false);
+  const { loggedIn, setLoggedIn } = useContext(LogContext);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { userId, setUserId } = useContext(UserContext);
   const { pollId, setPollId } = useContext(DeletedPollContext);
 
   const { pollCreated, setPollCreated } = useContext(PollContext);
+  const { deleteButton, setDeleteButton } = useContext(LogContext);
 
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -191,13 +195,13 @@ const MyNavbar = ({ isLoggedIn }) => {
   };
 
   return (
-    <Navbar fixed="top" expand="sm" bg="white" variant="light" style={{ paddingTop: "1.5%" }}>
+    <Navbar expand="sm" bg="white" variant="light" className='navbar container-fluid'>
       <Navbar.Brand href="/">
-        <img src={logo} style={{ width: "93.54px", height: "42.07px", position: "relative", left: "25px", }} />
+        <img src={logo} style={{ width: "93.54px", height: "42.07px", position: "relative", left: "15px" }} />
       </Navbar.Brand>
-      <Navbar.Collapse className="justify-content-end">
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-          <Nav>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" className="mr-2" />
+        <Navbar.Collapse id="responsive-navbar-nav" className="d-flex justify-content-end">
+          <Nav className="ml-auto">
             {!loggedIn && (
               <>
                 <Nav.Item>
@@ -243,11 +247,10 @@ const MyNavbar = ({ isLoggedIn }) => {
               </>
             )}
           </Nav>
-        </div>
-      </Navbar.Collapse>
+        </Navbar.Collapse>
 
       {/* Login Modal */}
-      <Modal show={showLogin} onHide={handleCloseLogin} centered>
+      <Modal show={showLogin} onHide={handleCloseLogin}  className="my-modal modal-dialog">
         <Modal.Header closeButton style={{ backgroundColor: '#04395E', color: 'white', border: 'none' }}>
           <Modal.Title>Login</Modal.Title>
         </Modal.Header>
