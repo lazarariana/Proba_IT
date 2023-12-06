@@ -42,3 +42,7 @@ The previous design is now adapted to the reduced dimensions of a mobile phone t
 
 ## Server side
 Created a model for user and one for poll. Used CORS in order to add/delete/retrieve data from database in requests. Define routes to return all users/polls currently stored in database, create a user/poll, login a user, delete a poll by ID, get a user by ID. Used mongoose to interact with the database and Thunder Client VSCode extension for debugging the response of requests / the functionality of the operations implemented.
+
+## **How to run the app**
+Open 2 terminals, one in client folder and one in server folder,  and type "npm start".
+Open browser and access http://localhost:3000.
