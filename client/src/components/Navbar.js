@@ -17,7 +17,7 @@ import LogContext from '../LogContext';
 const MyNavbar = ({ isLoggedIn }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-  //const [loggedIn, setLoggedIn] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const { loggedIn, setLoggedIn } = useContext(LogContext);
 
   const [email, setEmail] = useState('');
@@ -195,62 +195,58 @@ const MyNavbar = ({ isLoggedIn }) => {
   };
 
   return (
-    <Navbar expand="sm" bg="white" variant="light" className='navbar container-fluid'>
+    <Navbar expand="sm" bg="white" variant="light" className='navbar container-fluid' expanded={expanded}>
       <Navbar.Brand href="/">
         <img src={logo} style={{ width: "93.54px", height: "42.07px", position: "relative", left: "15px" }} />
       </Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" className="mr-2" />
-        <Navbar.Collapse id="responsive-navbar-nav" className="d-flex justify-content-end">
-          <Nav className="ml-auto">
-            {!loggedIn && (
-              <>
-                <Nav.Item>
-                  <Button variant="link" id="custom-btn" onClick={handleShowLogin}
-                    style={{
-                      color: "#04395E", fontFamily: "Inter", fontSize: "22px",
-                      fontWeight: "500", lineHeight: "27px", letterSpacing: "0em",
-                      textAlign: "left", textDecoration: "none"
-                    }}>Login</Button>
-                </Nav.Item>
-                <Nav.Item>
-                  <Button variant="link" id="custom-btn" onClick={handleShowRegister}
-                    style={{
-                      color: "#04395E", fontFamily: "Inter", fontSize: "22px", fontWeight: "500",
-                      lineHeight: "27px", letterSpacing: "0em", textAlign: "left", textDecoration: "none"
-                    }}>Register</Button>
-                </Nav.Item>
-              </>
-            )}
-            {loggedIn && (
-              <>
-                <Nav.Item>
-                  <Button
-                    variant="link"
-                    onClick={logoutUser}
-                    style={{
-                      color: "#04395E", fontFamily: "Inter", fontSize: "22px",
-                      fontWeight: "500", lineHeight: "27px", letterSpacing: "0em",
-                      textAlign: "left", textDecoration: "none"
-                    }}>Log out</Button>
-                </Nav.Item>
-                <Nav.Item>
-                  <Button
-                    variant="outline-success"
-                    className="mr-sm-2 custom-button"
-                    onClick={handleShowCreatePoll}
-                    style={{
-                      color: "#04395E", fontFamily: "Inter", fontSize: "22px", fontWeight: "500",
-                      lineHeight: "27px", letterSpacing: "0em", textAlign: "left", textDecoration: "none",
-                      border: "none"
-                    }} >Create poll</Button>
-                </Nav.Item>
-              </>
-            )}
-          </Nav>
-        </Navbar.Collapse>
+      <Navbar.Toggle aria-controls="responsive-navbar-nav" onClick={() => setExpanded(!expanded)} />
+      <Navbar.Collapse id="responsive-navbar-nav" className="d-flex justify-content-end">
+        <Nav className="ml-auto">
+          {!loggedIn && (
+            <>
+              <Nav.Item>
+                <Button variant="link" id="custom-btn" onClick={() => { handleShowLogin(); setExpanded(false); }}
+                  style={{
+                    color: "#04395E", fontFamily: "Inter", fontSize: "22px",
+                    fontWeight: "500", lineHeight: "27px", letterSpacing: "0em",
+                    textAlign: "left", textDecoration: "none"
+                  }}>Login</Button>
+              </Nav.Item>
+              <Nav.Item>
+                <Button variant="link" id="custom-btn" onClick={() => { handleShowRegister(); setExpanded(false); }}
+                  style={{
+                    color: "#04395E", fontFamily: "Inter", fontSize: "22px", fontWeight: "500",
+                    lineHeight: "27px", letterSpacing: "0em", textAlign: "left", textDecoration: "none"
+                  }}>Register</Button>
+              </Nav.Item>
+            </>
+          )}
+          {loggedIn && (
+            <>
+              <Nav.Item>
+                <Button variant="link" onClick={() => { logoutUser(); setExpanded(false); }}
+                  style={{
+                    color: "#04395E", fontFamily: "Inter", fontSize: "22px",
+                    fontWeight: "500", lineHeight: "27px", letterSpacing: "0em",
+                    textAlign: "left", textDecoration: "none"
+                  }}>Log out</Button>
+              </Nav.Item>
+              <Nav.Item>
+                <Button variant="outline-success" className="mr-sm-2 custom-button" onClick={() => { handleShowCreatePoll(); setExpanded(false); }}
+                  style={{
+                    color: "#04395E", fontFamily: "Inter", fontSize: "22px", fontWeight: "500",
+                    lineHeight: "27px", letterSpacing: "0em", textAlign: "left", textDecoration: "none",
+                    border: "none"
+                  }}>Create poll</Button>
+              </Nav.Item>
+            </>
+          )}
+        </Nav>
+      </Navbar.Collapse>
+
 
       {/* Login Modal */}
-      <Modal show={showLogin} onHide={handleCloseLogin}  className="my-modal modal-dialog">
+      <Modal show={showLogin} onHide={handleCloseLogin} className="my-modal modal-dialog">
         <Modal.Header closeButton style={{ backgroundColor: '#04395E', color: 'white', border: 'none' }}>
           <Modal.Title>Login</Modal.Title>
         </Modal.Header>

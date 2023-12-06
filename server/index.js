@@ -64,9 +64,8 @@ passport.use('local', new LocalStrategy({
 
 app.use(passport.initialize());
 
-mongoose.connect(
-  "mongodb+srv://ariana:AqEvToNGkkrC3aoi@cluster0.hu0cvuj.mongodb.net/proba?retryWrites=true&w=majority"
-);
+mongoose.connect("mongodb://127.0.0.1:27017/Proba_IT", {
+});
 
 app.get("/getUsers", (req, res) => {
   UserModel.find({})

@@ -30,7 +30,7 @@
   .my-modal .modal-dialog {
     top: 40vh;
     left: 15vw;
-    max-width: 100%;
+    max-width: 80%;
   }
 }
 

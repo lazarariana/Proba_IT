@@ -93,15 +93,7 @@ const Body = () => {
     <>
       <Container fluid className="d-flex flex-column flex-md-row overflow-auto bg-cover bg-no-repeat bg-fixed container-padding" style={{ backgroundImage: `url(${backgroundImage})`, marginBottom: '30px' }}>
         <Col xs={12} md={6} className="align-items-center mt-5">
-          <p className="text-white ml-md-5 w-75" style={{
-            fontFamily: "Inter",
-            fontSize: "2vw",
-            fontWeight: "600",
-            lineHeight: "40px",
-            letterSpacing: "-0.005em",
-            marginLeft: '2vw',
-            marginTop: '90px',
-          }}>
+          <p className="text-paragraph">
             Opiniile sunt mai importante ca niciodată.
             Platformele de sondaje permit organizatorilor să culeagă feedback
             direct de la audiența lor și să înțeleagă mai bine nevoile și dorințele acesteia.
@@ -122,7 +114,7 @@ const Body = () => {
       <div className="polls-container" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(40%, 1fr))',
-        gap: '5px', // Add space between rows
+        gap: '5px',
         justifyContent: 'center',
         padding: '0 10px',
       }}>
