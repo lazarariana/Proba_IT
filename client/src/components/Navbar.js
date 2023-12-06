@@ -175,6 +175,7 @@ const MyNavbar = ({ isLoggedIn }) => {
       }, {
         headers: {
           'Content-Type': 'application/json',
+
         }
       });
 
